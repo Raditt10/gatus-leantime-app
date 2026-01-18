@@ -68,7 +68,12 @@
         { "name": "APP_PORT", "value": "8080" },
         { "name": "SITENAME", "value": "LKS Leantime" },
         { "name": "LEANTIME_TIMEZONE", "value": "Asia/Jakarta" },
-        { "name": "LEANTIME_DEBUG", "value": "0" }
+        { "name": "LEANTIME_DEBUG", "value": "1" },
+        { "name": "LEANTIME_DB_HOST", "value": "lks-project-management-cluster.cfnkzpmutmbl.us-east-1.rds.amazonaws.com" },
+        { "name": "LEANTIME_DB_USER", "value": "admin" },
+        { "name": "LEANTIME_DB_PASSWORD", "value": "awskeren" },
+        { "name": "LEANTIME_DB_DATABASE", "value": "mysql" },
+        { "name": "LEANTIME_DB_PORT", "value": "3306" }
       ],
       "mountPoints": [
         {
