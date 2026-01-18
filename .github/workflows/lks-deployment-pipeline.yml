@@ -1,0 +1,118 @@
+name: LKS Deployment Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'gatus/**'
+      - 'leantime/**'
+      - '.github/workflows/lks-deployment-pipeline.yml'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: lks-gatus
+  ECS_CLUSTER: lks-oss-cluster
+  TOKEN: ${{ secrets.TOKEN }}
+  
+  # Service Names (sesuai yang dibuat di AWS ECS)
+  ECS_GATUS_SERVICE: gatus-service
+  ECS_LEANTIME_SERVICE: leantime-service
+  
+  # Task Definition Paths (sesuai folder di VS Code)
+  GATUS_TASK_DEFINITION: gatus/task-definition.json
+  LEANTIME_TASK_DEFINITION: leantime/task-definition.json
+  
+  # URLs (Gatus di port 8080, Leantime di port 80)
+  GATUS_URL: "http://${{ secrets.ALB_ENDPOINT }}:8080"
+  LEANTIME_URL: "http://${{ secrets.ALB_ENDPOINT }}"
+
+permissions:
+  contents: read
+
+jobs:
+  # JOB 1: BUILD & DEPLOY GATUS
+  build-and-deploy-gatus:
+    name: Build & Deploy Gatus
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'gatus/') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Update Gatus Configuration
+        run: |
+          # Mengganti placeholder di config.yaml dengan value asli dari Secrets/Env
+          sed -i "s|<github-token>|$TOKEN|g" gatus/config/config.yaml
+          sed -i "s|<leantime-url>|$LEANTIME_URL|g" gatus/config/config.yaml
+          sed -i "s|<gatus-url>|$GATUS_URL|g" gatus/config/config.yaml
+          echo "Configuration updated."
+          cat gatus/config/config.yaml
+
+      - name: Get Short Commit Hash
+        run: echo "IMAGE_TAG=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Build image dari folder gatus
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./gatus
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+          echo "IMAGE_FULL_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Update ECS task definition
+        run: |
+          # Mengganti placeholder image di task def dengan image baru yang barusan di-push
+          # Pastikan di file task-definition.json bagian image berisi: <task-def-image>
+          sed -i "s|<task-def-image>|$IMAGE_FULL_URI|g" $GATUS_TASK_DEFINITION
+          echo "Task definition updated."
+          cat $GATUS_TASK_DEFINITION
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ env.GATUS_TASK_DEFINITION }}
+          service: ${{ env.ECS_GATUS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          force-new-deployment: true
+
+  # JOB 2: DEPLOY LEANTIME (Hanya Deploy Task Def)
+  deploy-leantime:
+    name: Deploy Leantime
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'leantime/') || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ env.LEANTIME_TASK_DEFINITION }}
+          service: ${{ env.ECS_LEANTIME_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          force-new-deployment: true
