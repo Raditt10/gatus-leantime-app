@@ -12,7 +12,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: lks-gatus
-  ECS_CLUSTER: lks-oss-cluster
+  ECS_CLUSTER: lks-oss-cluster2
   TOKEN: ${{ secrets.TOKEN }}
   
   # Service Names (sesuai yang dibuat di AWS ECS)
