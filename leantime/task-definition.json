@@ -12,37 +12,25 @@
     {
       "name": "public-files",
       "efsVolumeConfiguration": {
-        "fileSystemId": "fs-0675ddd9947caa3b0", 
+        "fileSystemId": "fs-03d1a0949671640fa",
         "rootDirectory": "/",
-        "transitEncryption": "ENABLED",
-        "authorizationConfig": {
-          "accessPointId": "fsap-0aace0e99ef12f6bd",
-          "iam": "ENABLED"
-        }
+        "transitEncryption": "ENABLED"
       }
     },
     {
       "name": "userfiles",
       "efsVolumeConfiguration": {
-        "fileSystemId": "fs-0675ddd9947caa3b0",
+        "fileSystemId": "fs-03d1a0949671640fa",
         "rootDirectory": "/",
-        "transitEncryption": "ENABLED",
-        "authorizationConfig": {
-          "accessPointId": "fsap-02d22066787c54b16",
-          "iam": "ENABLED"
-        }
+        "transitEncryption": "ENABLED"
       }
     },
     {
       "name": "plugins",
       "efsVolumeConfiguration": {
-        "fileSystemId": "fs-0675ddd9947caa3b0",
+        "fileSystemId": "fs-03d1a0949671640fa",
         "rootDirectory": "/",
-        "transitEncryption": "ENABLED",
-        "authorizationConfig": {
-          "accessPointId": "fsap-0257f2f225f427338",
-          "iam": "ENABLED"
-        }
+        "transitEncryption": "ENABLED"
       }
     }
   ],
