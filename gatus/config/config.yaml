@@ -1,24 +1,28 @@
-# FILL IN THE MISSING VALUES BELOW
 alerting:
-  ???:
-    token: "<github-token>" # WARN: DO NOT CHANGE THIS LINE
-# FILL IN THE MISSING VALUES ABOVE
+  providers:
+    - name: github-issues
+      type: github
+      token: "<github-token>" # Ini akan diganti otomatis oleh Pipeline
+      repository: "Raditt10/gatus-leantime-app" # Sesuaikan dengan USERNAME/REPO kamu
+      overrides:
+        - description: "Service is down!"
+          send-on-resolved: true
+          failure-threshold: 3
+          success-threshold: 5
 
-# FILL IN THE MISSING VALUES BELOW
 endpoints:
-  - name: Leantime
-    url: <leantime-url> # WARN: DO NOT CHANGE THIS LINE
-    interval:
+  - name: Leantime Homepage
+    group: core
+    url: "<leantime-url>" # Ini akan diganti otomatis oleh Pipeline
+    interval: 30s
     conditions:
-    alerts:
-      - type: ???
-        description: "Sensei, Leantime is down! Please check and fix it."
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 300"
 
-  - name: Gatus
-    url: <gatus-url> # WARN: DO NOT CHANGE THIS LINE
-    interval:
+  - name: Gatus Monitoring
+    group: core
+    url: "<gatus-url>" # Ini akan diganti otomatis oleh Pipeline
+    interval: 1m
     conditions:
-    alerts:
-      - type: ???
-        description: "Sensei, Gatus is down! Please check and fix it."
-# FILL IN THE MISSING VALUES BELOW
+      - "[STATUS] == 200"
+      - "[RESPONSE_TIME] < 500"
