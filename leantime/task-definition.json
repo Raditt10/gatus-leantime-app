@@ -26,6 +26,7 @@
         { "name": "LEANTIME_DEBUG", "value": "1" },
         { "name": "LEANTIME_TIMEZONE", "value": "Asia/Jakarta" }
       ],
+      "mountPoints": [],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
