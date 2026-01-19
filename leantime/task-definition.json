@@ -17,17 +17,15 @@
       "image": "leantime/leantime:latest",
       "cpu": 0,
       "essential": true,
-      "command": [
-        "sh",
-        "-c",
-        "echo \"<?php class Configuration { public \\$dbHost = '10.100.1.137'; public \\$dbUser = 'admin'; public \\$dbPassword = 'awskeren'; public \\$dbDatabase = 'mysql'; public \\$dbPort = '3306'; public \\$appUrl = 'http://localhost'; public \\$sitename = 'LKS Leantime'; public \\$language = 'en-US'; public \\$theme = 'default'; } ?>\" > /var/www/html/config/configuration.php && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
-      ],
       "portMappings": [
         { "containerPort": 8080, "hostPort": 8080, "protocol": "tcp" }
       ],
-      "secrets": [],
-      "environment": [],
-      "mountPoints": [],
+      "environment": [
+        { "name": "APP_PORT", "value": "8080" },
+        { "name": "SITENAME", "value": "LKS Leantime" },
+        { "name": "LEANTIME_DEBUG", "value": "1" },
+        { "name": "LEANTIME_TIMEZONE", "value": "Asia/Jakarta" }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
