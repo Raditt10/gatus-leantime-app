@@ -26,7 +26,7 @@
         { "containerPort": 8080, "hostPort": 8080, "protocol": "tcp" }
       ],
       "environment": [
-        { "name": "LEANTIME_DB_HOST", "value": "lks-project-management-cluster.cfnkzpmutmbl.us-east-1.rds.amazonaws.com" },
+        { "name": "LEANTIME_DB_HOST", "value": "" },
         { "name": "LEANTIME_DB_USER", "value": "admin" },
         { "name": "LEANTIME_DB_PASSWORD", "value": "awskeren" },
         { "name": "LEANTIME_DB_DATABASE", "value": "mysql" },
