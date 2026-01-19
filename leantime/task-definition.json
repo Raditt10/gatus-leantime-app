@@ -1,51 +1,145 @@
 {
-  "family": "lks-leantime-app",
-  "taskRoleArn": "arn:aws:iam::950055801200:role/LabRole",
-  "executionRoleArn": "arn:aws:iam::950055801200:role/LabRole",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": [ "FARGATE" ],
-  "cpu": "1024",
-  "memory": "2048",
-  "volumes": [],
-  "runtimePlatform": {
-    "cpuArchitecture": "X86_64",
-    "operatingSystemFamily": "LINUX"
-  },
-  "containerDefinitions": [
-    {
-      "name": "leantime",
-      "image": "leantime/leantime:latest",
-      "cpu": 0,
-      "essential": true,
-      "command": [
-        "sh",
-        "-c",
-        "sed -i 's/localhost/10.100.1.137/g' /var/www/html/config/configuration.php || true && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
-      ],
-      "portMappings": [
-        { "containerPort": 8080, "hostPort": 8080, "protocol": "tcp" }
-      ],
-      "environment": [
-        { "name": "LEANTIME_DB_HOST", "value": "lks-project-management-cluster.cfnkzpmutmbl.us-east-1.rds.amazonaws.com" },
-        { "name": "LEANTIME_DB_USER", "value": "admin" },
-        { "name": "LEANTIME_DB_PASSWORD", "value": "awskeren" },
-        { "name": "LEANTIME_DB_DATABASE", "value": "mysql" },
-        { "name": "LEANTIME_DB_PORT", "value": "3306" },
-        { "name": "APP_PORT", "value": "8080" },
-        { "name": "SITENAME", "value": "LKS Leantime" },
-        { "name": "LEANTIME_DEBUG", "value": "1" },
-        { "name": "LEANTIME_TIMEZONE", "value": "Asia/Jakarta" }
-      ],
-      "mountPoints": [],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/lks/leantime-app",
-          "awslogs-region": "us-east-1",
-          "awslogs-create-group": "true",
-          "awslogs-stream-prefix": "ecs"
+    "family": "lks-leantime-app",
+    "containerDefinitions": [
+        {
+            "name": "leantime",
+            "image": "leantime/leantime:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "SITENAME",
+                    "value": "LKS Leantime"
+                },
+                {
+                    "name": "LEANTIME_TIMEZONE",
+                    "value": "Asia/Jakarta"
+                },
+                {
+                    "name": "APP_PORT",
+                    "value": "8080"
+                },
+                {
+                    "name": "LEANTIME_DEBUG",
+                    "value": "0"
+                },
+                {
+                    "name": "LEANTIME_SESSION_PASSWORD",
+                    "value": "GantiStringAcakYangPanjangDanRumit123!"
+                },
+                {
+                    "name": "LEANTIME_SESSION_SECURE",
+                    "value": "false"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "public-files",
+                    "containerPath": "/var/www/html/public/userfiles",
+                    "readOnly": false
+                },
+                {
+                    "sourceVolume": "userfiles",
+                    "containerPath": "/var/www/html/userfiles",
+                    "readOnly": false
+                },
+                {
+                    "sourceVolume": "plugins",
+                    "containerPath": "/var/www/html/app/Plugins",
+                    "readOnly": false
+                }
+            ],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "LEANTIME_DB_HOST",
+                    "valueFrom": "/lks/db/host"
+                },
+                {
+                    "name": "LEANTIME_DB_USER",
+                    "valueFrom": "/lks/db/username"
+                },
+                {
+                    "name": "LEANTIME_DB_PASSWORD",
+                    "valueFrom": "/lks/db/password"
+                },
+                {
+                    "name": "LEANTIME_DB_DATABASE",
+                    "valueFrom": "/lks/db/name"
+                },
+                {
+                    "name": "LEANTIME_DB_PORT",
+                    "valueFrom": "/lks/db/port"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/lks/leantime-app",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
         }
-      }
+    ],
+    "taskRoleArn": "arn:aws:iam::950055801200:role/LabRole",
+    "executionRoleArn": "arn:aws:iam::950055801200:role/LabRole",
+    "networkMode": "awsvpc",
+    "volumes": [
+        {
+            "name": "public-files",
+            "efsVolumeConfiguration": {
+                "fileSystemId": "fs-0675ddd9947caa3b0",
+                "rootDirectory": "/",
+                "transitEncryption": "ENABLED",
+                "authorizationConfig": {
+                    "accessPointId": "fsap-0257f2f225f427338",
+                    "iam": "ENABLED"
+                }
+            }
+        },
+        {
+            "name": "userfiles",
+            "efsVolumeConfiguration": {
+                "fileSystemId": "fs-0675ddd9947caa3b0",
+                "rootDirectory": "/",
+                "transitEncryption": "ENABLED",
+                "authorizationConfig": {
+                    "accessPointId": "fsap-02d22066787c54b16",
+                    "iam": "ENABLED"
+                }
+            }
+        },
+        {
+            "name": "plugins",
+            "efsVolumeConfiguration": {
+                "fileSystemId": "fs-0675ddd9947caa3b0",
+                "rootDirectory": "/",
+                "transitEncryption": "ENABLED",
+                "authorizationConfig": {
+                    "accessPointId": "fsap-0257f2f225f427338",
+                    "iam": "ENABLED"
+                }
+            }
+        }
+    ],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
     }
-  ]
 }
