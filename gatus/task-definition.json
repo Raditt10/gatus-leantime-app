@@ -1,7 +1,7 @@
 {
   "family": "lks-gatus-app",
-  "taskRoleArn": "arn:aws:iam::950055801200:role/LabRole",
-  "executionRoleArn": "arn:aws:iam::950055801200:role/LabRole",
+  "taskRoleArn": "arn:aws:iam::159908042030:role/LabRole",
+  "executionRoleArn": "arn:aws:iam::159908042030:role/LabRole",
   "networkMode": "awsvpc",
   "volumes": [],
   "placementConstraints": [],
@@ -19,7 +19,7 @@
   "containerDefinitions": [
     {
       "name": "gatus",
-      "image": "<task-def-image>", 
+      "image": "159908042030.dkr.ecr.us-east-1.amazonaws.com/lks-gatus:latest",
       "cpu": 0,
       "essential": true,
       "volumesFrom": [],
