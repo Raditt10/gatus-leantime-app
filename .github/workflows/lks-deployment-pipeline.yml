@@ -15,15 +15,13 @@ env:
   ECS_CLUSTER: lks-oss-cluster2
   TOKEN: ${{ secrets.TOKEN }}
   
-  # Service Names (sesuai yang dibuat di AWS ECS)
   ECS_GATUS_SERVICE: gatus-service
   ECS_LEANTIME_SERVICE: leantime-service
   
-  # Task Definition Paths (sesuai folder di VS Code)
+ 
   GATUS_TASK_DEFINITION: gatus/task-definition.json
   LEANTIME_TASK_DEFINITION: leantime/task-definition.json
   
-  # URLs (Gatus di port 8080, Leantime di port 80)
   GATUS_URL: "http://${{ secrets.ALB_ENDPOINT }}:8080"
   LEANTIME_URL: "http://${{ secrets.ALB_ENDPOINT }}"
 
@@ -31,7 +29,6 @@ permissions:
   contents: read
 
 jobs:
-  # JOB 1: BUILD & DEPLOY GATUS
   build-and-deploy-gatus:
     name: Build & Deploy Gatus
     runs-on: ubuntu-latest
@@ -92,7 +89,6 @@ jobs:
           cluster: ${{ env.ECS_CLUSTER }}
           force-new-deployment: true
 
-  # JOB 2: DEPLOY LEANTIME (Hanya Deploy Task Def)
   deploy-leantime:
     name: Deploy Leantime
     runs-on: ubuntu-latest

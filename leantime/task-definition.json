@@ -33,7 +33,7 @@
         { "name": "LEAN_DEBUG", "value": "1" },
         { "name": "LEAN_DEFAULT_TIMEZONE", "value": "Asia/Jakarta" },
         { "name": "LEAN_SESSION_SECURE", "value": "false" },
-        { "name": "LEAN_SESSION_PASSWORD", "value": "RahasiaLKS2025YangSangatPanjangSekali!" }
+        { "name": "LEAN_SESSION_PASSWORD", "value": "Radit123" }
       ],
       "mountPoints": [],
       "logConfiguration": {
